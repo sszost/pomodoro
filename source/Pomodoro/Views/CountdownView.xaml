@@ -14,44 +14,20 @@
                 <Setter Property="Width" Value="25"></Setter>
             </Style.Setters>
         </Style>
-        <Style x:Key="LargeButton" TargetType="Button">
-            <Style.Setters>
-                <Setter Property="Height" Value="45"></Setter>
-                <Setter Property="Width" Value="45"></Setter>
-                <Setter Property="Padding" Value="0,-5,0,0"></Setter>
-            </Style.Setters>
-        </Style>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+    <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <RepeatButton Command="{Binding UpWorkCountdown}" Content="▲" Delay="500" Style="{DynamicResource SmallButton}" Margin="0,0,0,2"/>
-            <TextBlock Text="{Binding Path=CountdownWorkTime, Converter={StaticResource TimeConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Margin="0,2"/>
-            <RepeatButton Command="{Binding DownWorkCountdown}" Content="▼" Delay="500" Style="{DynamicResource SmallButton}" Margin="0,2,0,0"/>
+            <RepeatButton Command="{Binding UpCountdownCommand}" Content="▲" Delay="500" Style="{DynamicResource SmallButton}" Margin="0,0,0,2"/>
+            <TextBlock Text="{Binding Path=CountdownTime, Converter={StaticResource TimeConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Margin="0,2"/>
+            <RepeatButton Command="{Binding DownCountdownCommand}" Content="▼" Delay="500" Style="{DynamicResource SmallButton}" Margin="0,2,0,0"/>
         </StackPanel>
         <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock TextWrapping="Wrap" Text="{Binding Path=CurrentWorkTime, Converter={StaticResource TimeConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="48"/>
-        </StackPanel>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1">
-            <RepeatButton Content="▲" Style="{DynamicResource SmallButton}" Delay="500" Margin="0,0,0,2"/>
-            <TextBlock Text="{Binding Path=CountdownPlayTime, Converter={StaticResource TimeConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Margin="0,2"/>
-            <RepeatButton Content="▼" Style="{DynamicResource SmallButton}" Delay="500" Margin="0,2,0,0"/>
-        </StackPanel>
-        <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1">
-            <TextBlock TextWrapping="Wrap" Text="{Binding Path=CurrentPlayTime, Converter={StaticResource TimeConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="48"/>
-        </StackPanel>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal">
-            <Button Content="↺" Command="{Binding Restart}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="36" Style="{DynamicResource LargeButton}"/>
-            <Button Content="⤻" FontSize="36" Style="{DynamicResource LargeButton}"/>
+            <TextBlock TextWrapping="Wrap" Text="{Binding Path=CurrentTime, Converter={StaticResource TimeConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="48"/>
         </StackPanel>
     </Grid>
 

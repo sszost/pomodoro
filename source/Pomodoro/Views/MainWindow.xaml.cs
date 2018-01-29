@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Pomodoro.ViewModels;
+using System.Windows;
 using Unity;
 
 namespace Pomodoro.Views
@@ -8,10 +9,13 @@ namespace Pomodoro.Views
    /// </summary>
    public partial class MainWindow : Window
    {
+      private readonly MainWindowViewModel viewModel = null;
+
       public MainWindow(IUnityContainer container)
       {
          InitializeComponent();
-         CountdownContent.Children.Add(container.Resolve<CountdownView>());
+         viewModel = container.Resolve<MainWindowViewModel>();
+         DataContext = viewModel;
       }
    }
 }

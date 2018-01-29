@@ -8,10 +8,9 @@ namespace Pomodoro.Views
    /// </summary>
    public partial class CountdownView : UserControl
    {
-      public CountdownView(ICountdownViewModel countdown)
+      public CountdownView()
       {
          InitializeComponent();
-         DataContext = countdown;
       }
    }
 }
