@@ -2,149 +2,107 @@
 using Pomodoro.Services;
 using System;
 using System.Windows.Input;
-using Unity;
 
-namespace Pomodoro.Models
+namespace Pomodoro.ViewModels
 {
-   public interface ICountdownViewModel { }
+   public interface ICountdownViewModel
+   {
+      void Initialize(TimeSpan time, Uri uri);
+      void RestartTimer();
+      void StopTimer();
+   }
 
    public class CountdownViewModel : ObservableObject, ICountdownViewModel
    {
-      private ICountdownTimerService _countdownTimerWork;
-      private TimeSpan _currentWorkTime;
-      private TimeSpan _countdownWorkTime;
+      public ICommand UpCountdownCommand { get; private set; }
+      public ICommand DownCountdownCommand { get; private set; }
 
-      private ICountdownTimerService _countdownTimerPlay;
-      private TimeSpan _currentPlayTime;
-      private TimeSpan _countdownPlayTime;
+      private ITimerService timer;
+      private TimeSpan currentTime;
+      private TimeSpan countdownTime;
 
-      public CountdownViewModel(IUnityContainer container)
+      public CountdownViewModel(ITimerService work)
       {
-         _countdownTimerWork = container.Resolve<ICountdownTimerService>();
-         _countdownTimerWork.Init(new TimeSpan(0, 20, 0),
-            new TimerUpdateEventHandler(WorkTimerUpdate),
-            new CountdownUpdateEventHandler(WorkCountdownUpdate),
-            new CountdownFinishEventHandler(WorkCountdownFinish),
-            new Uri(@"sounds/bell.wav", UriKind.Relative));
+         timer = work ?? throw new ArgumentNullException("work timer service");
 
-         _countdownTimerPlay = container.Resolve<ICountdownTimerService>();
-         _countdownTimerPlay.Init(new TimeSpan(0, 20, 0),
-            new TimerUpdateEventHandler(PlayTimerUpdate),
-            new CountdownUpdateEventHandler(PlayCountdownUpdate),
-            new CountdownFinishEventHandler(PlayCountdownFinish),
-            new Uri(@"sounds/applause.wav", UriKind.Relative));
+         timer.SubscribeOnTimerUpdateEvent(OnTimerUpdate);
+         timer.SubscribeOnCountdownUpdateEvent(OnCountdownUpdate);
+         timer.SubscribeOnCountdownFinishEvent(OnCountdownFinish);
+
+         UpCountdownCommand = new DelegateCommand(UpCountdown);
+         DownCountdownCommand = new DelegateCommand(DownCountdown);
       }
 
-      #region work
-
-      public ICommand Restart
+      public void Initialize(TimeSpan time, Uri uri)
       {
-         get { return new DelegateCommand(new Action(delegate { _countdownTimerWork.Restart(); })); }
+         timer.Initialize(time, uri);
       }
 
-      public ICommand StartWork
+      public void RestartTimer()
       {
-         get { return new DelegateCommand(new Action(delegate { _countdownTimerWork.Start(); })); }
+         timer.Stop();
+         timer.Restart();
       }
 
-      public ICommand StopWork
+      public void StopTimer()
       {
-         get { return new DelegateCommand(new Action(delegate { _countdownTimerWork.Stop(); })); }
+         timer.Stop();
       }
 
-      public ICommand UpWorkCountdown
+      #region events
+
+      private void OnTimerUpdate(TimeSpan time)
       {
-         get { return new DelegateCommand(new Action(delegate { _countdownTimerWork.UpCountdown(); })); }
+         CurrentTime = time;
       }
 
-      public ICommand DownWorkCountdown
+      private void OnCountdownUpdate(TimeSpan time)
       {
-         get { return new DelegateCommand(new Action(delegate { _countdownTimerWork.DownCountdown(); })); }
+         CountdownTime = time;
       }
 
-      public TimeSpan CurrentWorkTime
+      private void OnCountdownFinish()
       {
-         get { return _currentWorkTime; }
+      }
+
+      #endregion events
+
+      #region commands
+
+      public void UpCountdown()
+      {
+         timer.UpCountdown();
+      }
+
+      public void DownCountdown()
+      {
+         timer.DownCountdown();
+      }
+
+      #endregion commands
+
+      #region properties
+
+      public TimeSpan CurrentTime
+      {
+         get { return currentTime; }
          set
          {
-            _currentWorkTime = value;
-            OnPropertyChanged("CurrentWorkTime");
+            currentTime = value;
+            OnPropertyChanged("CurrentTime");
          }
       }
 
-      private void WorkTimerUpdate(object sender, TimerUpdateEventArgs e)
+      public TimeSpan CountdownTime
       {
-         CurrentWorkTime = e.NewCurrentTime;
-      }
-
-      public TimeSpan CountdownWorkTime
-      {
-         get { return _countdownWorkTime; }
+         get { return countdownTime; }
          set
          {
-            _countdownWorkTime = value;
-            OnPropertyChanged("CountdownWorkTime");
+            countdownTime = value;
+            OnPropertyChanged("CountdownTime");
          }
       }
 
-      private void WorkCountdownUpdate(object sender, CountdownUpdateEventArgs e)
-      {
-         CountdownWorkTime = e.NewCountdownTime;
-      }
-
-      private void WorkCountdownFinish(object sender, EventArgs e)
-      {
-         _countdownTimerPlay.Start();
-      }
-
-      #endregion work
-
-      #region play
-
-      public ICommand StartPlay
-      {
-         get { return new DelegateCommand(new Action(delegate { _countdownTimerPlay.Start(); })); }
-      }
-
-      public ICommand StopPlay
-      {
-         get { return new DelegateCommand(new Action(delegate { _countdownTimerPlay.Stop(); })); }
-      }
-
-      public TimeSpan CurrentPlayTime
-      {
-         get { return _currentPlayTime; }
-         set
-         {
-            _currentPlayTime = value;
-            OnPropertyChanged("CurrentPlayTime");
-         }
-      }
-
-      private void PlayTimerUpdate(object sender, TimerUpdateEventArgs e)
-      {
-         CurrentPlayTime = e.NewCurrentTime;
-      }
-
-      public TimeSpan CountdownPlayTime
-      {
-         get { return _countdownPlayTime; }
-         set
-         {
-            _countdownPlayTime = value;
-            OnPropertyChanged("CountdownPlayTime");
-         }
-      }
-
-      private void PlayCountdownUpdate(object sender, CountdownUpdateEventArgs e)
-      {
-         CountdownPlayTime = e.NewCountdownTime;
-      }
-
-      private void PlayCountdownFinish(object sender, EventArgs e)
-      {
-      }
-
-      #endregion play
+      #endregion properties
    }
 }

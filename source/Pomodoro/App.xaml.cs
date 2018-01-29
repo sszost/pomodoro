@@ -1,6 +1,7 @@
-﻿using Pomodoro.Models;
-using Pomodoro.Services;
+﻿using Pomodoro.Services;
+using Pomodoro.ViewModels;
 using Pomodoro.Views;
+using Prism.Events;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
@@ -22,10 +23,12 @@ namespace Pomodoro
          Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
          IUnityContainer container = new UnityContainer();
+         //ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(container));
 
-         container.RegisterType<ICountdownTimerService, CountdownTimerService>();
+         container.RegisterType<IEventAggregator, EventAggregator>();
+         container.RegisterType<ITimerService, TimerService>();
          container.RegisterType<ICountdownViewModel, CountdownViewModel>();
-         container.RegisterType<CountdownView>();
+         container.RegisterType<IPomodoroViewModel, PomodoroViewModel>();
 
          var window = container.Resolve<MainWindow>();
          window.Show();
